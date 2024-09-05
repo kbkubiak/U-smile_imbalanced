@@ -3,6 +3,7 @@ build.ref.model <- function(ref_vars, dataset){
   ref_model <- glm(as.formula(paste('disease ~ ', paste(ref_vars, sep="", collapse=" + ") )), data = dataset, family = binomial) 
   return(ref_model)
 }
+#
 # build new models ####
 build.new.models <- function(ref_vars, new_vars, dataset){
   new_models <- list()
@@ -13,6 +14,7 @@ build.new.models <- function(ref_vars, new_vars, dataset){
   names(new_models) <- new_vars
   return(new_models)
 }
+#
 # calculate raw results with repetitions for training and test datasets ####
 # prev - prevalence of event class / percentage of the event class / imbalance 
 # rep - number of repetitions
@@ -409,3 +411,4 @@ calculate.raw.results.w.test <- function(prev, rep,
   return(result)
   
 } # end function
+#

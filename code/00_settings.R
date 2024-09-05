@@ -1,6 +1,6 @@
 source('code/00_functions.R')
-
-# libraries 
+#
+# libraries ####
 library(readxl)
 library(writexl)
 library(ggplot2)
@@ -24,8 +24,8 @@ library(knitr)
 library(broom)
 library(kableExtra)
 library(ggarchery)
-
-# general settings 
+#
+# general settings ####
 Sys.setenv(LANG = 'en')
 
 # import raw data 
@@ -62,3 +62,4 @@ usmile_labels <- c('non-events with better prediction',
                    'events with better prediction')
 labels_prevalence <- c('1%','10%','30%','50%','70%','90%','99%')
 labels_model_pretty <- c("ST depression", "Str Rnd normal", "Glucose", "Rnd normal")
+#

@@ -17,8 +17,7 @@ usmile_labels <- c('non-events with better prediction',
                    'events with worse prediction',
                    'events with better prediction')
 
-
-
+#
 panels <- data.frame(subclass = rep(c('nonev_dw',
                                       'nonev_up',
                                       'event_dw',
@@ -34,7 +33,7 @@ panels <- data.frame(subclass = rep(c('nonev_dw',
                                0.097, 0.047, 0.092, 0.055, # h
                                0.045, 0.092, 0.058, 0.099  # i
                      ) )
-
+#
 
 tiff('results/U-smile_shapes.tiff', res = 300, 
      width = 1000, height = 1700, units = 'px')

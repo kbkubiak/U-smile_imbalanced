@@ -86,6 +86,7 @@ dataset_prev <- rbind(ds_prev01,
                       ds_prev90,
                       ds_prev99)
 ## write_xlsx(dataset_prev, 'results/dataset_prev.xlsx')
+#
 # build reference models for each prevalence: ref_models_prev ####
 prevalence <- c(0.01, 0.10, 0.30, 0.50, 0.70, 0.90, 0.99)
 labels_prevalence
@@ -95,6 +96,7 @@ for(i in seq_along(prevalence)){
   ref_models_prev[[i]] <- glm(disease ~ sex + age + bp + chol, family = binomial, data = dataset_prev[dataset_prev$prevalence == prevalence[i],])
 }
 names(ref_models_prev) <- labels_prevalence
+#
 # ROC curves for ref models: roc_ref_prev ####
 roc_ref_prev <- lapply(ref_models_prev, function(x) roc(x$y, x$fitted.values, direction = '<'))
 #
@@ -126,7 +128,7 @@ for(i in seq_along(prevalence)){
   new_models_strat_rnd_normal[[i]] <- glm(disease ~ sex + age + bp + chol + strat_rnd_normal, family = binomial, data = dataset_prev[dataset_prev$prevalence == prevalence[i],])
 }
 names(new_models_strat_rnd_normal) <- labels_prevalence
-
+#
 # ROC curves for new models: roc_new_XXX ####
 roc_new_glu <- lapply(new_models_glu, function(x) roc(x$y, x$fitted.values, direction = '<'))
 roc_new_stde <- lapply(new_models_stde, function(x) roc(x$y, x$fitted.values, direction = '<'))
@@ -313,7 +315,6 @@ grid.arrange(ROC_plots_stde[[1]],
 )
 dev.off()
 #
-
 # TEST DATASETS ####
 ind_prev01_test <- raw_indices %>% filter(dataset == 'test', prevalence == 0.01, iteration == iter_train[1])
 ind_prev10_test <- raw_indices %>% filter(dataset == 'test', prevalence == 0.10, iteration == iter_train[2])
@@ -441,7 +442,6 @@ for(i in seq_along(prevalence)){
                                             new_models_strat_rnd_normal_test[[i]], dir = '<')
 }
 #
-
 # TEST: plots of ROC curves ####
 # glucose
 ROC_plots_glu_test <- list()
@@ -583,6 +583,4 @@ grid.arrange(ROC_plots_stde_test[[1]],
              
 )
 dev.off()
-
-
-
+#
