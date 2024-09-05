@@ -28,11 +28,10 @@ raw_results_ref_conv %>% group_by(dataset, prevalence) %>%
             FN_ref   = mean(FN_ref,   na.rm = T),
             TP_ref   = mean(TP_ref,   na.rm = T) ) %>% 
   mutate(desc_stat = 'mean') %>% relocate(desc_stat, .after = prevalence) -> results_ref_mean
-# write_xlsx(results_ref_mean, 'results/results_means_ref_models.xlsx')
+write_xlsx(results_ref_mean, 'results/results_means_ref_models.xlsx')
 #
 # plot of strat BS and difference in strat BS between training and test ds ####
-results_ref_mean %>% group_by(dataset) %>% #filter(dataset == 'train') %>% 
-  #select(prevalence, BS_0_ref, BS_1_ref) %>% 
+results_ref_mean %>% group_by(dataset) %>% 
   pivot_longer(cols = c(BS_0_ref, BS_1_ref), names_to = 'BS', values_to = 'value') -> str_bs
 str_bs$dataset <- factor(str_bs$dataset, levels = c('train', 'test'))
 
@@ -119,60 +118,10 @@ ggplot(BS_diff, aes(x = prevalence * 100, y = value,  color = diff_BS) ) +
         aspect.ratio = 1) +
   ggtitle('B Stratified BS difference (test vs. training dataset)') -> plot_diff_BS
 #
-# tiff('results/ref_BS_plot_smoother.tiff', res = 300, width = 0.95 * 1855, height = 950, units = 'px')
+tiff('results/ref_BS_plot_smoother.tiff', res = 300, width = 0.95 * 1855, height = 950, units = 'px')
 grid.arrange(plot_str_BS, plot_diff_BS, nrow = 1)
-#dev.off()
+dev.off()
 #
-# plot - mianowniki dla RB 
-str_bs <- mutate(str_bs, nn = case_when(dataset == 'train' & BS == 'BS_0_ref' ~ 300*(1-prevalence), 
-                                        dataset == 'train' & BS == 'BS_1_ref' ~ 300*prevalence,
-                                        dataset == 'test'  & BS == 'BS_0_ref' ~ 100*(1-prevalence), 
-                                        dataset == 'test'  & BS == 'BS_1_ref' ~ 100*prevalence
-) )
-str_bs
-ggplot(str_bs, aes(x = prevalence * 100, y = nn* value, color = BS)) +
-  geom_point(size = 1) +
-  geom_smooth(se=F, size = 0.5, aes(linetype = dataset)) +
-  scale_color_manual(values = c('#0F3C78',
-                                '#D51424'),
-                     labels = c('non-events', 'events')) +
-  scale_linetype_manual(values = c('solid', 'dashed'),
-                        labels = c('training', 'test')) +
-  scale_x_continuous(breaks = prevalence_breaks) +
-  guides(linetype = guide_legend(nrow=2, override.aes = list(color = 'black')),
-         color = guide_legend(nrow=2)) +
-  xlab('Percentage of the event class') +
-  #ylab('Stratified BS') +
-  labs(color = 'class') +
-  #ylim(c(-0.02, 1)) +
-  theme(plot.title.position = "plot", 
-        legend.position = 'bottom',
-        panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text = element_text(size = 6),
-        axis.title = element_text(size = 7),
-        plot.title = element_text(size = 8),
-        legend.title = element_text(size = 7),
-        legend.text = element_text(size = 6),
-        #legend.spacing.x = unit(0, "cm"),
-        legend.key.width  = unit(0.5, 'cm'),
-        legend.key.height = unit(0.2, 'cm'),
-        aspect.ratio = 1) +
-  ggtitle('RB denominator') 
-## ## ## 
-barbi_bs_joint <- dplyr::left_join(BARBI_mean, select(str_bs, dataset, prevalence, BS, value, nn), by = c('prevalence', 'dataset'))
-barbi_bs_joint %>% filter(dataset == 'train') %>% 
-  ggplot(aes(x = RB_nonev , y = value, color = model)  ) +
-  geom_point() +
-  geom_line() +
-  # scale_color_manual(values = c('#0F3C78',
-  #                               '#D51424'),
-  #                    labels = c('non-events', 'events')) +
-  # scale_x_continuous(breaks = prevalence_breaks) +
-  facet_wrap(~ BS)
-# guides(linetype = guide_legend(nrow=2, override.aes = list(color = 'black')),
-#        color = guide_legend(nrow=2))
-## ## ## ## 
 # calculate summaries - means - new models: results_new_mean ####
 raw_results_comp_conv %>% group_by(dataset, prevalence, model) %>% 
   summarise(LRT_p_value = mean(LRT_p_value, na.rm = T),
@@ -196,7 +145,7 @@ raw_results_comp_conv %>% group_by(dataset, prevalence, model) %>%
             FN          = mean(FN,          na.rm = T),
             TP          = mean(TP,          na.rm = T)      ) %>% 
   mutate(desc_stat = 'mean') %>% relocate(desc_stat, .after = model) -> results_new_mean
-# write_xlsx(results_new_mean, 'results/results_means_new_models.xlsx')
+write_xlsx(results_new_mean, 'results/results_means_new_models.xlsx')
 #
 # MCC - for how many models MCC was not computed ####
 raw_results_ref_conv %>% group_by(dataset, prevalence) %>% 
@@ -205,8 +154,8 @@ raw_results_ref_conv %>% group_by(dataset, prevalence) %>%
 raw_results_comp_conv %>% group_by(dataset, prevalence, model) %>% 
   summarise(n_missing_MCC       = sum(is.na(MCC)),
             n_missing_delta_MCC = sum(is.na(delta_MCC))  ) -> how_many_missing_deltaMCC
-# write_xlsx(how_many_missing_MCC_ref , 'results/how_many_missing_MCC_ref.xlsx')
-# write_xlsx(how_many_missing_deltaMCC, 'results/how_many_missing_deltaMCC.xlsx')
+write_xlsx(how_many_missing_MCC_ref , 'results/how_many_missing_MCC_ref.xlsx')
+write_xlsx(how_many_missing_deltaMCC, 'results/how_many_missing_deltaMCC.xlsx')
 # 
 # LRT and delta_AUC: p values from the mean value of the test statistic ####
 results_new_mean %>% filter(dataset == 'train') %>% 
@@ -214,7 +163,7 @@ results_new_mean %>% filter(dataset == 'train') %>%
   mutate(LRT_p = round(2 * (1 - pchisq(LRT_statistic, 1)), 3),
          AUC_p = round(2 * pnorm(AUC_statistic), 3 ) ) %>% 
   select(dataset, prevalence, model, LRT_p_value, AUC_p_value) -> p_values
-# write_xlsx(p_values, 'results/p_values_LRT_DeLong.xlsx')
+write_xlsx(p_values, 'results/p_values_LRT_DeLong.xlsx')
 #
 # calculate BARBI ####
 raw_results_comp_conv %>% group_by(dataset, prevalence, model) %>% 
@@ -240,7 +189,7 @@ raw_results_comp_conv %>% group_by(dataset, prevalence, model) %>%
             I_event     = mean(II_event   , na.rm = T),
             I           = mean(II_overall , na.rm = T) ) %>% 
   mutate(desc_stat = 'mean') %>% relocate(desc_stat, .after = model) -> BARBI_mean
-## write_xlsx(BARBI_mean, 'results/BARBI_mean.xlsx')
+write_xlsx(BARBI_mean, 'results/BARBI_mean.xlsx')
 #
 # prepare BARBIS for the U-smile plot ####
 # nonev_be
@@ -349,10 +298,6 @@ BARBI_for_plot %>% filter(dataset == 'train') %>%
   ggtitle('B  U-smile plots of the RB coefficient (training dataset)') +
   facet_grid(model_pretty ~ prevalence) -> plot_RB_train
 
-plot(rbind(ggplotGrob(plot_BA_train),
-           ggplotGrob(plot_RB_train), 
-           size = 'first') )
-
 tiff('results/Usmile_train_grayline.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
 plot(rbind(ggplotGrob(plot_BA_train),
            ggplotGrob(plot_RB_train), 
@@ -417,9 +362,6 @@ BARBI_for_plot %>% filter(dataset == 'test') %>%
   ggtitle('B  U-smile plots of the RB coefficient (test dataset)') +
   facet_grid(model_pretty ~ prevalence) -> plot_RB_test
 
-plot(rbind(ggplotGrob(plot_BA_test),
-           ggplotGrob(plot_RB_test), 
-           size = 'first') )
 
 tiff('results/Usmile_test_grayline.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
 plot(rbind(ggplotGrob(plot_BA_test),
@@ -452,7 +394,6 @@ BARBI_mean %>% filter(dataset == 'train') %>% group_by(model) %>%
 lvl_legend <- get_legend(plot_lvl_legend)
 as_ggplot(lvl_legend)
 #
-# dodac argument span = 0.75 
 # for upper plots
 plot.level <- function(data, x, y, color, ymin, ymax, ylab, span = 0.75){ 
   ggplot(data, aes({{x}}, {{y}}, color = {{color}})) + 
@@ -461,8 +402,7 @@ plot.level <- function(data, x, y, color, ymin, ymax, ylab, span = 0.75){
     geom_smooth(aes(linetype = {{color}}), se = F, size = 0.5, span = span) + 
     scale_linetype_manual(values = levels_linetypes ) +
     scale_color_manual(values = levels_colors) +
-    #scale_x_continuous(breaks = prevalence_breaks) +
-    scale_x_continuous(breaks = c(1, seq(5,95,by=5), 99) ) +
+    scale_x_continuous(breaks = prevalence_breaks) +
     ylab(ylab) +
     theme(legend.position = "none",
           plot.margin = unit(c(0,0.1,0,0.1), 'cm'),   
@@ -482,8 +422,7 @@ plot.level.axis <- function(data, x, y, color, ymin, ymax, ylab, span = 0.75){
     geom_smooth(aes(linetype = {{color}}), se = F, size = 0.5, span = span) + 
     scale_linetype_manual(values = levels_linetypes ) +
     scale_color_manual(values = levels_colors) +
-    #scale_x_continuous(breaks = prevalence_breaks) +
-    scale_x_continuous(breaks = c(1, seq(5,95,by=5), 99) ) +
+    scale_x_continuous(breaks = prevalence_breaks) +
     ylab(ylab) +
     theme(legend.position = "none",
           plot.margin = unit(c(0,0.1,0.2,0.1), 'cm'), 
@@ -503,7 +442,6 @@ plot.level3 <- function(data, x, y, color, ymin, ymax, ylab, span = 0.75){
     geom_smooth(aes(linetype = {{color}}), se = F, size = 0.5, span = span) + 
     scale_linetype_manual(values = levels_linetypes ) +
     scale_color_manual(values = levels_colors) +
-    #scale_x_continuous(breaks = c(1, seq(5,95,by=5), 99) ) +
     scale_x_continuous(breaks = prevalence_breaks) +
     ylab(ylab) +
     theme(legend.position = "none",
@@ -551,12 +489,10 @@ p16 <- plot.level.axis(filter(BARBI_mean, dataset=='train'), prevalence100, RB_e
 
 p17 <-      plot.level(filter(BARBI_mean, dataset=='train'), prevalence100, I_nonev, model, -0.3, 0.6, 'I0', span = 0.9)
 p18 <- plot.level.axis(filter(BARBI_mean, dataset=='train'), prevalence100, I_event, model, -0.3, 0.6, 'I1', span = 0.9)
-grid.arrange(p13,p14,nrow=2)
-grid.arrange(p15,p16,nrow=2)
 
 # lvl 3
 p19 <- plot.level3(filter(BARBI_mean, dataset=='train'), prevalence100, BA, model, -0.002, 0.04, ylab = 'BA', span = 0.8)
-p20 <- plot.level3(filter(BARBI_mean, dataset=='train'), prevalence100, RB, model, -1, 0.5, ylab = 'RB', span = 1.4)
+p20 <- plot.level3(filter(BARBI_mean, dataset=='train'), prevalence100, RB, model, -1, 0.5, ylab = 'RB', span = 1.5)
 p21 <- plot.level3(filter(BARBI_mean, dataset=='train'), prevalence100, I,  model, -0.2, 0.6, ylab = 'I',  span = 1)
 
 # LEVELS final plot ####
@@ -566,7 +502,7 @@ txt_lvl2 <- textGrob("Level 2", gp = gpar(fontisize = 10) )
 txt_lvl3 <- textGrob("Level 3", gp = gpar(fontisize = 10) )
 
 
-tiff('results/LEVELS_trends_train_smoother.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
+tiff('results/LEVELS_trends_train.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
 grid.arrange(txt_title_train, 
              txt_lvl1, txt_lvl2, txt_lvl3, 
              
@@ -644,14 +580,14 @@ p18_te <- plot.level.axis(filter(BARBI_mean, dataset=='test'), prevalence100, I_
 
 # lvl 3
 p19_te <- plot.level3(filter(BARBI_mean, dataset=='test'), prevalence100, BA, model, -0.002, 0.04, ylab = 'BA', span = 0.8)
-p20_te <- plot.level3(filter(BARBI_mean, dataset=='test'), prevalence100, RB, model, -1, 0.5, ylab = 'RB', span = 1.4)
+p20_te <- plot.level3(filter(BARBI_mean, dataset=='test'), prevalence100, RB, model, -1, 0.5, ylab = 'RB', span = 1.5)
 p21_te <- plot.level3(filter(BARBI_mean, dataset=='test'), prevalence100, I,  model, -0.2, 0.6, ylab = 'I' , span = 1)
 
 # LEVELS final plot 
 txt_title_test <- textGrob("Trends in BA-RB-I coefficients (test dataset)", gp = gpar(fontisize = 12))
 
 
-tiff('results/LEVELS_trends_test_smoother.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
+tiff('results/LEVELS_trends_test.tiff', res = 300, width = 0.95 * 1855, height = 0.95 * 2625, units = 'px')
 grid.arrange(txt_title_test,
              txt_lvl1, txt_lvl2, txt_lvl3, 
              

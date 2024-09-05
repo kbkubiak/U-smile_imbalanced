@@ -43,10 +43,10 @@ raw_indices <- rbind(raw_results_01[[4]],
                      raw_results_90[[4]],
                      raw_results_99[[4]])
 
-# write_xlsx(raw_results_ref,   'results/raw_results_ref.xlsx')
-# write_xlsx(raw_results_comp,  'results/raw_results_comp.xlsx')
-# write_xlsx(raw_convergence,   'results/raw_convergence.xlsx')
-# write.table(raw_indices,      'results/raw_indices.txt')
+write_xlsx(raw_results_ref,   'results/raw_results_ref.xlsx')
+write_xlsx(raw_results_comp,  'results/raw_results_comp.xlsx')
+write_xlsx(raw_convergence,   'results/raw_convergence.xlsx')
+write.table(raw_indices,      'results/raw_indices.txt')
 #
 # identify converged ref models: raw_results_ref_conv ####
 not_converged_ref <- raw_convergence %>% filter(conv_ref == F) %>% select(iteration, prevalence)
@@ -86,7 +86,7 @@ ind_not_converged_ref <- c(
 
 raw_results_ref_conv <- raw_results_ref[-ind_not_converged_ref,]
 raw_results_ref_conv$dataset <- factor(raw_results_ref_conv$dataset, levels = c('train', 'test'))
-## write_xlsx(raw_results_ref_conv, 'results/raw_results_ref_conv.xlsx')
+write_xlsx(raw_results_ref_conv, 'results/raw_results_ref_conv.xlsx')
 #
 # identify converged new models: raw_results_comp_conv ####
 raw_convergence %>% 
@@ -94,7 +94,7 @@ raw_convergence %>%
   group_by(prevalence, model) %>% 
   summarise(n = n()) -> how_many_models_converged
 
-# write_xlsx(how_many_models_converged, 'results/how_many_models_converged.xlsx')
+write_xlsx(how_many_models_converged, 'results/how_many_models_converged.xlsx')
 
 # only 1 and 99% prevalences did not converge
 # identify iterations that converged for 1 and 99%
@@ -122,5 +122,5 @@ raw_results_comp_conv <- rbind(raw_results_comp %>% filter(prevalence == 0.01 & 
 
 raw_results_comp_conv$model   <- factor(raw_results_comp_conv$model,   levels = new_vars)
 raw_results_comp_conv$dataset <- factor(raw_results_comp_conv$dataset, levels = c('train', 'test'))
-# write_xlsx(raw_results_comp_conv, 'results/raw_results_comp_conv.xlsx')
+write_xlsx(raw_results_comp_conv, 'results/raw_results_comp_conv.xlsx')
 #

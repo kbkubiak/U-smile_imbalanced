@@ -85,7 +85,6 @@ dataset_prev <- rbind(ds_prev01,
                       ds_prev70,
                       ds_prev90,
                       ds_prev99)
-## write_xlsx(dataset_prev, 'results/dataset_prev.xlsx')
 #
 # build reference models for each prevalence: ref_models_prev ####
 prevalence <- c(0.01, 0.10, 0.30, 0.50, 0.70, 0.90, 0.99)
