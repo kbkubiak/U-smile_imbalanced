@@ -1,3 +1,4 @@
+# functions
 # build reference model ####
 build.ref.model <- function(ref_vars, dataset){
   ref_model <- glm(as.formula(paste('disease ~ ', paste(ref_vars, sep="", collapse=" + ") )), data = dataset, family = binomial) 

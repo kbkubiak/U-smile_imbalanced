@@ -1,7 +1,7 @@
 source('code/00_settings.R')
-
+#
 raw_indices <- read.csv("results/raw_indices.txt", sep="")
-
+#
 # find iteration corresponding to mean BS_ref for every prevalence ####
 results_ref_mean %>% filter(dataset == 'train') %>% select(dataset, prevalence, BS_ref) %>% select(BS_ref) -> mean_BS_ref
 mean_BS_ref <- as.data.frame(mean_BS_ref)

@@ -34,7 +34,6 @@ panels <- data.frame(subclass = rep(c('nonev_dw',
                                0.045, 0.092, 0.058, 0.099  # i
                      ) )
 #
-
 tiff('results/U-smile_shapes.tiff', res = 300, 
      width = 1000, height = 1700, units = 'px')
 ggplot(panels, aes(x = subclass, y = value, group = panel)) +
@@ -64,3 +63,4 @@ ggplot(panels, aes(x = subclass, y = value, group = panel)) +
   ylim(c(0, 0.13))
 
 dev.off()
+#
